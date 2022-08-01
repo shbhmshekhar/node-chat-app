@@ -10,8 +10,11 @@ document.querySelector('#chatForm').addEventListener('submit', (e) => {
   e.preventDefault();
   const chatMessage = e.target.elements.message;
   //   console.log('msg', chatMessage.value);
-  socket.emit('sendMessage', chatMessage.value, (message) => {
-    console.log('Message delivered', message);
+  socket.emit('sendMessage', chatMessage.value, (error) => {
+    if (error) {
+      return console.log(error);
+    }
+    console.log('Message delivered');
   });
   chatMessage.value = '';
 });
@@ -22,10 +25,16 @@ document.querySelector('#sendLocation').addEventListener('click', () => {
   }
 
   navigator.geolocation.getCurrentPosition((position) => {
-    socket.emit('sendLocation', {
-      latitude: position.coords.latitude,
-      longitude: position.coords.longitude,
-    });
+    socket.emit(
+      'sendLocation',
+      {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      },
+      () => {
+        console.log('Location shared sucessfully');
+      }
+    );
   });
 });
 
