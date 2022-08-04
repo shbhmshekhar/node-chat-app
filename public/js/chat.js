@@ -7,11 +7,14 @@ const $sendLocationBtn = document.querySelector('#sendLocation');
 const $messages = document.querySelector('#messages');
 
 const $mesageTemplate = document.querySelector('#message-template').innerHTML;
+const $locationTemplate =
+  document.querySelector('#location-template').innerHTML;
 
 socket.on('message', (message) => {
   console.log(message);
   const html = Mustache.render($mesageTemplate, {
-    message,
+    message: message.text,
+    createdAt: moment(message.createdAt).format('h:mm a'),
   });
   $messages.insertAdjacentHTML('beforeend', html);
 });
@@ -25,6 +28,7 @@ $messageForm.addEventListener('submit', (e) => {
 
   const chatMessage = e.target.elements.message;
   //   console.log('msg', chatMessage.value);
+
   socket.emit('sendMessage', chatMessage.value, (error) => {
     $msgFormButton.removeAttribute('disabled');
     $msgFormInput.value = '';
@@ -35,6 +39,15 @@ $messageForm.addEventListener('submit', (e) => {
     console.log('Message delivered');
   });
   chatMessage.value = '';
+});
+
+socket.on('sendLocationMessage', (location) => {
+  const html = Mustache.render($locationTemplate, {
+    location: location.url,
+    createdAt: moment(location.createdAt).format('h:mm a'),
+  });
+  $messages.insertAdjacentHTML('beforeend', html);
+  console.log(location);
 });
 
 $sendLocationBtn.addEventListener('click', () => {
