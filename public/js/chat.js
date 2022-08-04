@@ -10,6 +10,8 @@ const $mesageTemplate = document.querySelector('#message-template').innerHTML;
 const $locationTemplate =
   document.querySelector('#location-template').innerHTML;
 
+const $sidebarTemplate = document.querySelector('#sidebar-template').innerHTML;
+
 const { username, room } = Qs.parse(location.search, {
   ignoreQueryPrefix: true,
 });
@@ -54,6 +56,14 @@ socket.on('sendLocationMessage', (location) => {
   });
   $messages.insertAdjacentHTML('beforeend', html);
   console.log(location);
+});
+
+socket.on('roomData', ({ room, users }) => {
+  const html = Mustache.render($sidebarTemplate, {
+    room,
+    users,
+  });
+  document.querySelector('#sidebar').innerHTML = html;
 });
 
 $sendLocationBtn.addEventListener('click', () => {
